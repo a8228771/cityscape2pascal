@@ -9,26 +9,31 @@
 import os, sys
 import glob
 from PIL import Image
+from utils import image_id
 
 # VEDAI 图像存储位置
-src_img_dir = "/home/ubuntu/codes/city2pascal/source/JPEGImages"
+src_img_dir = "/home/cessful/data_set/leftImg8bit_trainvaltest/leftImg8bit/train"
 # VEDAI 图像的 ground truth 的 txt 文件存放位置
-src_txt_dir = "/home/ubuntu/codes/city2pascal/source/trainvaltxt"
-src_xml_dir = "/home/ubuntu/codes/city2pascal/source/trainvalxml"
+src_txt_dir = "/home/cessful/data_set/city2pascal/Annotations/trainvaltxt"
+src_xml_dir = "/home/cessful/data_set/city2pascal/Annotations/trainvalxml"
 
-img_Lists = glob.glob(src_img_dir + '/*.jpg')
-
+# img_Lists = glob.glob(src_img_dir + '/*.png')
+img_Lists = image_id(rootdir=src_img_dir)
+print(src_img_dir)
+print(img_Lists)
 img_basenames = []  # e.g. 100.jpg
 for item in img_Lists:
-    img_basenames.append(os.path.basename(item))
-
+    # img_basenames.append(os.path.basename(item))
+    img_basenames.append(item)
+    # print(item)
+# print(img_basenames)
 img_names = []  # e.g. 100
 for item in img_basenames:
-    temp1, temp2 = os.path.splitext(item)
-    img_names.append(temp1)
-
+    #temp1, temp2 = os.path.splitext(item)
+    img_names.append(item + '_leftImg8bit')
+# print(img_names)
 for img in img_names:
-    im = Image.open((src_img_dir + '/' + img + '.jpg'))
+    im = Image.open((src_img_dir + '/' + img + '.png'))
     width, height = im.size
 
     # open the crospronding txt file
@@ -37,7 +42,15 @@ for img in img_names:
 
     # write in xml file
     # os.mknod(src_xml_dir + '/' + img + '.xml')
-    xml_file = open((src_xml_dir + '/' + img + '.xml'), 'w')
+    index = img.rfind('/')
+    list_temp = list(img)
+    list_temp[index] = '_'
+    img_out = ''.join(list_temp)
+    try:
+        xml_file = open((src_xml_dir + '/' + img_out + '.xml'), 'w')
+    except:
+        os.mkdir(src_xml_dir)
+        xml_file = open((src_xml_dir + '/' + img_out + '.xml'), 'w')
     xml_file.write('<annotation>\n')
     xml_file.write('    <folder>CITYSCAPE</folder>\n')
     xml_file.write('    <filename>' + str(img) + '.png' + '</filename>\n')

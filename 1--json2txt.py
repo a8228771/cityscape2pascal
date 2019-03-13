@@ -6,14 +6,18 @@ import json
 import os
 from os import listdir, getcwd
 from os.path import join
+from utils import image_id
 import os.path
 
 
-
+# directory of Image data
 rootdir = '/home/cessful/data_set/leftImg8bit_trainvaltest/leftImg8bit/train'  # 写自己存放图片的数据地址
+# directory of ground truth data
+gt_dir = '/home/cessful/data_set/gtFine_trainvaltest/gtFine/train'
 
 def position(pos):
     # 该函数用来找出xmin,ymin,xmax,ymax即bbox包围框
+    # This function find out xmin,ymin,xmax,ymax of a bbox
     x = []
     y = []
     nums = len(pos)
@@ -30,6 +34,7 @@ def position(pos):
     return b
 
 # pascal voc 标准格式
+# pascal voc standard format
 # < xmin > 174 < / xmin >
 # < ymin > 101 < / ymin >
 # < xmax > 349 < / xmax >
@@ -52,17 +57,30 @@ def convert(size, box):
 
 
 def convert_annotation(image_id):
-    # load_f = open("/home/ubuntu/PycharmProjects/city2pascal/source/train/tubingen/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
-    load_f = open("/home/cessful/data_set/gtFine_trainvaltest/gtFine/train/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
+    # loading .json label dir
+    load_f = open(gt_dir + "/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
     load_dict = json.load(load_f)
-    out_dir = '/home/cessful/data_set/city2pascal/trainvaltxt/%s_leftImg8bit.txt' % (image_id)
+    out_dir = '/home/cessful/data_set/city2pascal/Annotations/trainvaltxt/%s_leftImg8bit.txt' % (image_id)
+    # output label in txt format 
+    
+    #################################################################
+    # replace the last '/' to '_' inorder to make all file in one dir
+    index = out_dir.rfind('/')
+    list_temp = list(out_dir)
+    list_temp[index] = '_'
+    out_dir = ''.join(list_temp)
+    out_file = open(out_dir, 'w')  # 输出标签的地址
+    ##################################################################
+    """
     try:
         out_file = open(out_dir, 'w')  # 输出标签的地址
     except: 
         index = out_dir.rfind('/')
-        os.mkdir(out_dir[:index+1])
+        # os.mkdir(out_dir[:index+1])
+        out_dir[index] = '_'
         out_file = open(out_dir, 'w')  # 输出标签的地址
     # keys=tuple(load_dict.keys())
+    """
     w = load_dict['imgWidth']  # 原图的宽，用于归一化
     h = load_dict['imgHeight']
     # print(h)
@@ -78,7 +96,7 @@ def convert_annotation(image_id):
         pos = objects[i]['polygon']
         bb = position(pos)
         # bb = convert((w, h), b)
-        cls_id = labels  # 我这里把行人和骑自行车的人都设为类别pedestrian
+        cls_id = labels
         out_file.write(cls_id + " " + " ".join([str(a) for a in bb]) + '\n')
         # print(type(pos))
 
@@ -86,21 +104,11 @@ def convert_annotation(image_id):
             print('no label json:',"%s_gtFine_polygons.json" % (image_id))
 
 
-def image_id(rootdir):
-    a = []
-    for parent, dirnames, filenames in os.walk(rootdir):
-        for filename in filenames:
-            filename = filename[:-16]
-            dirname = parent[len(rootdir)+1:]
-            # filename = filename.strip('_leftImg8bit.png')
-            filename = dirname + '/' + filename
-            a.append(filename)
-    return a
-
-
-
 if __name__ == '__main__':
     names = image_id(rootdir)
-    print(names)
+    print("Image data directory: ", rootdir, "\n")
+    print("Ground truth label(.json file) directory :", gt_dir, "\n")
+    print("Converting...")
     for image_id in names:
         convert_annotation(image_id)
+    print("done")
