@@ -10,7 +10,7 @@ import os.path
 
 
 
-rootdir = '/home/ubuntu/codes/city2pascal/source/JPEGImages'  # 写自己存放图片的数据地址
+rootdir = '/home/cessful/data_set/leftImg8bit_trainvaltest/leftImg8bit/train'  # 写自己存放图片的数据地址
 
 def position(pos):
     # 该函数用来找出xmin,ymin,xmax,ymax即bbox包围框
@@ -53,9 +53,15 @@ def convert(size, box):
 
 def convert_annotation(image_id):
     # load_f = open("/home/ubuntu/PycharmProjects/city2pascal/source/train/tubingen/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
-    load_f = open("/home/ubuntu/codes/city2pascal/source/trainvaljson/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
+    load_f = open("/home/cessful/data_set/gtFine_trainvaltest/gtFine/train/%s_gtFine_polygons.json" % (image_id), 'r')  # 导入json标签的地址
     load_dict = json.load(load_f)
-    out_file = open('/home/ubuntu/codes/city2pascal/source/trainvaltxt/%s_leftImg8bit.txt' % (image_id), 'w')  # 输出标签的地址
+    out_dir = '/home/cessful/data_set/city2pascal/trainvaltxt/%s_leftImg8bit.txt' % (image_id)
+    try:
+        out_file = open(out_dir, 'w')  # 输出标签的地址
+    except: 
+        index = out_dir.rfind('/')
+        os.mkdir(out_dir[:index+1])
+        out_file = open(out_dir, 'w')  # 输出标签的地址
     # keys=tuple(load_dict.keys())
     w = load_dict['imgWidth']  # 原图的宽，用于归一化
     h = load_dict['imgHeight']
@@ -68,34 +74,26 @@ def convert_annotation(image_id):
     for i in range(0, nums):
         labels = objects[i]['label']
         # print(i)
-        if (labels in ['person', 'rider']):
-            # print(labels)
-            pos = objects[i]['polygon']
-            bb = position(pos)
-            # bb = convert((w, h), b)
-            cls_id = 'pedestrian'  # 我这里把行人和骑自行车的人都设为类别pedestrian
-            out_file.write(cls_id + " " + " ".join([str(a) for a in bb]) + '\n')
-            # print(type(pos))
-        elif (labels in ['car', 'truck', 'bus', 'caravan', 'trailer']):
-            # print(labels)
-            pos = objects[i]['polygon']
-            bb = position(pos)
-            # bb = convert((w, h), b)
-            cls_id = 'car'  # 我这里把各种类型的车都设为类别car
-            out_file.write(cls_id + " " + " ".join([str(a) for a in bb]) + '\n')
+        # print(labels)
+        pos = objects[i]['polygon']
+        bb = position(pos)
+        # bb = convert((w, h), b)
+        cls_id = labels  # 我这里把行人和骑自行车的人都设为类别pedestrian
+        out_file.write(cls_id + " " + " ".join([str(a) for a in bb]) + '\n')
+        # print(type(pos))
 
-    if cls_id == '':
-        print('no label json:',"%s_gtFine_polygons.json" % (image_id))
+        if cls_id == '':
+            print('no label json:',"%s_gtFine_polygons.json" % (image_id))
 
 
 def image_id(rootdir):
     a = []
     for parent, dirnames, filenames in os.walk(rootdir):
         for filename in filenames:
-            # print(filename)
-
             filename = filename[:-16]
+            dirname = parent[len(rootdir)+1:]
             # filename = filename.strip('_leftImg8bit.png')
+            filename = dirname + '/' + filename
             a.append(filename)
     return a
 
@@ -103,5 +101,6 @@ def image_id(rootdir):
 
 if __name__ == '__main__':
     names = image_id(rootdir)
+    print(names)
     for image_id in names:
         convert_annotation(image_id)
