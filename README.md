@@ -11,8 +11,8 @@ convert cityscape bbox label formatto pascal voc bbox label format
         │   ├── Main
         │   └── Segmentation
         ├── JPEGImages         #存放源图片
-        ├── SegmentationClass  #存放的是图片，分割后的效果，见下文的例子
-        └── SegmentationObject #存放的是图片，分割后的效果，见下文的例子
+        ├── SegmentationClass  #存放的是图片，分割后的效果
+        └── SegmentationObject #存放的是图片，分割后的效果
 ``` 
 from：https://blog.csdn.net/u013832707/article/details/80060327 
  
