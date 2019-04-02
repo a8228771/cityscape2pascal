@@ -23,7 +23,7 @@ def GetFileFromThisRootDir(dir, ext=None):
 
 
 def move_file(xmlpath):
-    rootdir = '/home/ubuntu/Desktop/JPEGImages/'
+    rootdir = '/home/cessful/Desktop/JPEGImages/'
     img_dir = os.path.join(rootdir)
     move_image_dir = os.path.join(rootdir, 'blank/', 'images/')
     move_xml_dir = os.path.join(rootdir, 'blank/', 'xml/')
@@ -34,13 +34,13 @@ def move_file(xmlpath):
     name = custombasename(xmlpath)
     print('name',name)
     oldxmlpath = xmlpath
-    newxmloath = os.path.join(move_xml_dir + name +'.xml')
+    newxmlpath = os.path.join(move_xml_dir + name +'.xml')
 
     oldimgpath = os.path.join(img_dir + name + '.jpg')
     newimgpath = os.path.join(move_image_dir + name + '.jpg')
 
     shutil.move(oldimgpath, newimgpath)
-    shutil.move(oldxmlpath, newxmloath)
+    shutil.move(oldxmlpath, newxmlpath)
 
 
 def readXml(xmlfile):
@@ -104,12 +104,12 @@ def readXml(xmlfile):
 
     # print(len(bboxes))
     if bboxes == []:  # xml中无目标
-        # print('%s不存在目标' % xmlfile)
+        print('%s不存在目标' % xmlfile)
         move_file(xmlfile)
     return objnum
 
 if __name__ == '__main__':
-    xmldir = '/home/ubuntu/Desktop/Annotations'
+    xmldir = '/home/cessful/data_set/city2pascal/Annotations'
     xmlpath = GetFileFromThisRootDir(xmldir)
     nummax = 0
     name = ''

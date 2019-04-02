@@ -23,7 +23,7 @@ def GetFileFromThisRootDir(dir, ext=None):
 
 
 def move_file(xmlpath):
-    rootdir = '/home/ubuntu/codes/city2pascal/source/JPEGImages'
+    rootdir = '/home/cessful/data_set/city2pascal/JPEGImages'
     img_dir = os.path.join(rootdir)
     move_image_dir = os.path.join(rootdir, 'blank', 'images')
     move_xml_dir = os.path.join(rootdir, 'blank', 'xml')
@@ -109,7 +109,7 @@ def readXml(xmlfile):
     return objnum
 
 if __name__ == '__main__':
-    xmldir = '/home/ubuntu/codes/city2pascal/source/trainvalxml'
+    xmldir = '/home/cessful/data_set/city2pascal/Annotations'
     xmlpath = GetFileFromThisRootDir(xmldir)
     name = ''
     for xmldir in xmlpath:
